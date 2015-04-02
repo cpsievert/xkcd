@@ -1,6 +1,3 @@
-View the thing here -- http://cpsievert.github.io/xkcd/
-
-### LICENSE
 
 The MIT License (MIT)
 
