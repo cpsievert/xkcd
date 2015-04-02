@@ -28,3 +28,5 @@ docz <- plyr::join(doc.df, dates, by="url")
 #grab image titles and use that as the transcript (if none exists)
 comics <- llply(xmldocs, function(x) getNodeSet(x, "//div[@id='comic']"))
 imgs <- llply(comics, function(x) llply(x, xmlValue))
+
+save(docz, file = "data/docz.rda")

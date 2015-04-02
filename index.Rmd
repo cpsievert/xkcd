@@ -1,17 +1,16 @@
-Finding structure in xkcd comics with Latent Dirichlet Allocation
-========================================================
-
-```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
-library(knitr)
-render_html()
-```
+---
+title: "Finding structure in xkcd comics with Latent Dirichlet Allocation"
+author: "Carson Sievert"
+date: "`r Sys.Date()`"
+output: 
+  html_document
+---
 
 [xkcd](http://xkcd.com) is self-proclaimed as "a webcomic of romance, sarcasm, math, and language". There was a [recent effort](http://www.hotdamndata.com/2013/10/xkcd-webcomic-of-internet-small-talk.html) to quantify whether or not these "topics" agree with topics derived from the xkcd text corpus using [Latent Dirichlet Allocation](http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation) (LDA). That analysis makes the all too common folly of choosing an arbitrary number of topics. Maybe xkcd's tagline does provide a strong prior belief of a small number of topics, but here we take a more objective approach and let the data choose the number of topics. An "optimal" number of topics is found using the Bayesian model selection approach (with uniform prior belief on the number of topics) suggested by Griffiths and Steyvers ([2004](http://psiexp.ss.uci.edu/research/papers/sciencetopics.pdf)). After an optimal number is decided, topic interpretations and trends over time are explored.
 
-What exactly is LDA?
----------------------
+## What is LDA?
 
-Unlike many other text classification models, LDA is a special case of a [statistical mixture model](http://en.wikipedia.org/wiki/Mixture_model). As a result, each document (in our case, comic) is assumed to be a _mixture_ of latent topics. That is, each observed word originates from a topic that we do not directly observe. For demonstration purposes, consider the following xkcd comic given a hypothetical model with four topics: "romance" (in red), "sarcasm" (in blue), "math" (in black), and "language" (in green). 
+Unlike many other text classification models, LDA is a special case of a [statistical mixture model](http://en.wikipedia.org/wiki/Mixture_model). In LDA, each document (in our case, comic) is assumed to be a _mixture_ of latent topics. For demonstration purposes, consider the following xkcd comic given a hypothetical model with four topics: "romance" (in red), "sarcasm" (in blue), "math" (in black), and "language" (in green). 
 
 <div align="center">
   <img src="sports copy.png" width="300" height="400">
@@ -43,8 +42,8 @@ $$
 
 It's also common to use symmetric hyperparameters $\alpha$ and $\beta$, so these are usually thought of as scalar values. The benefit here is that we can integrate out $\phi$ and $\theta$ and use a collapsed Gibbs algorithm to obtain samples from the target distribution $p(\textbf{z}|\textbf{w}, T)$. Posterior samples of $\textbf{z}$ can then be used to construct estimates of $\phi$ and $\theta$. This algorithm has many implementations, but I chose to use the [R](http://cran.r-project.org/) package [LDAtools](https://github.com/kshirley/LDAtools) for model fitting and post-processing.
 
-Finding an optimal number of topics
----------------------------------------
+
+## Finding an optimal number of topics
 
 Given values for the hyperparameters $\alpha$ and $\beta$, one can find an "optimal" number of topics via Bayesian model selection:
 
@@ -61,13 +60,11 @@ $$
 where $\textbf{z}_m$ is the $m^{th}$ sample from the posterior $p(\textbf{z} | \textbf{w}, T)$. 
 
 
-Scraping and pre-processing xkcd corpus
----------------------------------------
+## Scraping and pre-processing xkcd corpus
 
 Thankfully xkcd keeps an [archive](http://xkcd.com/archive/) of all their comics with url paths and corresponding dates. Also, most comics are transcribed complete with scene descriptions, speaker ids, and "meta" alternative text. In this analysis, both scene descriptions and speaker ids were removed from the text corpus. It's also worth noting that, [especially](http://xkcd.com/1299/) [recently](http://xkcd.com/1300/), transcribers have been [lazy](http://xkcd.com/444/) because transcripts are missing. Luckily, in most of those cases, there is "meta" alternative text in the HTML `<img>` tag that was used instead. [This script](https://github.com/cpsievert/cpsievert.github.com/blob/master/projects/615/xkcd/scrape.R) shows how to scrape the data. [This script](https://github.com/cpsievert/cpsievert.github.com/blob/master/projects/615/xkcd/preprocess.R) shows the other pre-processing such as removing stop-words and stemming.
 
-Fitting the model
--------------------------------
+## Fitting the model
 
 The collapsed Gibbs sampler implemented in [LDAtools](https://github.com/kshirley/LDAtools) was used to fit models with 5, 10, ..., 50 topics. For each one of these 10 models, three chains (with randomized starting values) were each run for 1000 iterations. Convergence was monitored by tracking the log-likelihood and computing the potential scale reduction factor using the [coda](http://cran.r-project.org/web/packages/coda/index.html) package. As seen below, the reduction factor for each model is very close to 1 (thus, we a evidence of convergence for each model).
 
@@ -84,8 +81,7 @@ After convergence was reached, 1000 additional samples from each posterior was o
 
 The value of $\log p(w|T)$ reaches it's maximum at 20 topics. In some sense, $T$ can be thought of as a model complexity parameter. In that regard, this figure is in line with our intuition that a small number of topics fails to explain structure in the data while too many topics will tend to pick up on noise in the data. 
 
-Exploring topics through time
--------------------------------
+## Exploring topics through time
 
 xkcd has released one comic per day every day since January 1st, 2006. Using these dates, the number of words within each topic for each year was computed and presented in the figure below.
 
@@ -111,8 +107,7 @@ Another metric used to assess topic "volume" involves classifying each comic int
   <img src="prop3.png" width="800" height="500">
 </div>
 
-Topic Interpretation
--------------------------------
+## Topic Interpretation
 
 One of the hardest components to any topic model analysis is topic interpretation. The problem essentially boils down to finding a small set of keywords that are most "relevant" or "informative" to a given topic's meaning. There are many ways one could define the "relevance" of a word, but it is common to simply use probability within a topic. As I will explain shortly, we can take a much more flexible approach that fosters [EDA](http://en.wikipedia.org/wiki/Exploratory_data_analysis).
 
@@ -134,12 +129,6 @@ One may now be curious where else "guy" appears. By hovering over the label "guy
 
 Another option, which is useful for gaining a higher level understanding of the "landscape of topics", is the slider labelled "Number of Clusters". Try changing the value from 1 to 4. By doing so, we are grouping topics together into clusters of "similar" topics - based on their distribution over words (more details are on the "What's this?" tab). You should now see the three topics in the bottom left-hand portion of the scatterplot grouped together. By hovering over this cluster region, we can again see a list of relevant words, but now defined on this whole grouping of topics. It seems as though this cluster is related to the self-proclaimed "romance" theme.
 
-Conclusion
--------------------------------
+## Conclusion
 
 Hopefully you (the reader) will take time to explore different topics and find interesting things that I have not. To be honest, I found that some of the topics are hard to decipher. If you're a fan of xkcd, you're probably aware that their comics are sometimes hard to understand and often have hidden messages or implicit meaning (Heck, there's even a [website](http://www.explainxkcd.com/wiki/index.php/Main_Page) devoted to explaining xkcd comics). Since this is a bag-of-words model, it isn't that surprising that the model may be sub-optimal. Perhaps introducing bi-grams or even n-grams into the model would help in this respect.
-
-Acknowledgements
--------------------------------
-
-Special thanks to my collaborator [Kenny Shirley](http://www2.research.att.com/~kshirley/) for helpful comments and his work on [LDAtools](https://github.com/kshirley/LDAtools).
