@@ -7,7 +7,7 @@ if (!exists("dtm_test")) load("data/dtm_test.rda")
 # has a nice, concise overview of model selection for LDA
 library(topicmodels)
 ks <- seq(5, 150, by = 5)
-models <- lapply(ks, function(k) LDA(dtm_train, k, method = "Gibbs", control = list(alpha = 50/k, delta = 0.01, burnin = 1000, iter = 1000, keep = 50)))
+models <- lapply(ks, function(k) LDA(dtm_train, k, method = "Gibbs", control = list(alpha = 1/k, delta = 0.1, burnin = 1000, iter = 1000, keep = 50)))
 # keep the model that minimizes perplexity
 perps <- sapply(models, perplexity, dtm_test)
 best_model <- models[[which.min(perps)]]
