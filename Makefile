@@ -1,6 +1,6 @@
 all: vis
 
-vis: code/04-LDAvis.R data/best_model.rda data/dtm_train.rda
+vis: code/04-LDAvis.R data/models.rda data/dtm_train.rda
 	Rscript $<
 	
 data/best_model.rda: code/03-fitLDA.R data/dtm_train.rda

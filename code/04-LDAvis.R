@@ -1,8 +1,10 @@
+library(methods)
 if (!exists("dtm_train")) load("data/dtm_train.rda")
 if (!exists("models")) load("data/models.rda")
 
-# keep the model 
-best_model <- models[[which(ks == 50)]]
+# keep the "best" model 
+best <- which(sapply(models, function(x) x@k) == 30)
+best_model <- models[[best]]
 
 # compute summary statistics from training data
 library(topicmodels)
