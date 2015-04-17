@@ -41,12 +41,11 @@ dtm.control <- list(
 
 corp <- Corpus(VectorSource(docz$text))
 dtm <- DocumentTermMatrix(corp, control = dtm.control)
-mat <- as.matrix(dtm)
 # exclude terms that occur less than 5 times
-idx <- colSums(mat) > 5
+idx <- colSums(as.matrix(dtm)) > 5
 dtm <- dtm[, idx]
 # throw out any empty documents
-idx <- rowSums(mat) != 0
+idx <- rowSums(as.matrix(dtm)) > 0
 dtm <- dtm[idx, ]
 
 # randomly sample 10% of docs and hold them out (for our test set)
