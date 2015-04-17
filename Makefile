@@ -3,7 +3,7 @@ all: vis
 vis: code/04-LDAvis.R data/models.rda data/dtm_train.rda
 	Rscript $<
 	
-data/best_model.rda: code/03-fitLDA.R data/dtm_train.rda
+data/models.rda: code/03-fitLDA.R data/dtm_train.rda
 	Rscript $<
 	
 data/dtm_train.rda: code/02-preprocess.R data/docz.rda
