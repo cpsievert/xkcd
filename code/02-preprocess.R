@@ -41,7 +41,7 @@ dtm.control <- list(
 
 corp <- Corpus(VectorSource(docz$text))
 dtm <- DocumentTermMatrix(corp, control = dtm.control)
-mat <- as.matrix(dtm1)
+mat <- as.matrix(dtm)
 # exclude terms that occur less than 5 times
 idx <- colSums(mat) > 5
 dtm <- dtm[, idx]
@@ -51,7 +51,7 @@ dtm <- dtm[idx, ]
 
 # randomly sample 10% of docs and hold them out (for our test set)
 set.seed(392) # for reproducibility
-n <- nrow(docz)
+n <- dtm$nrow
 idx <- sample(n, size = floor(n * 0.1))
 dtm_train <- dtm[-idx, ]
 dtm_test <- dtm[idx, ]
