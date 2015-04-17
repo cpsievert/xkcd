@@ -9,8 +9,8 @@ best_model <- models[[best]]
 # compute summary statistics from training data
 library(topicmodels)
 mat <- as.matrix(dtm_train)
-docLens <- rowSums(mat)
-termFreq <- colSums(mat)
+docLens <- as.numeric(rowSums(mat))
+termFreq <- as.numeric(colSums(mat))
 
 # some sanity checks
 stopifnot(all(names(docLens) == best_model@documents))

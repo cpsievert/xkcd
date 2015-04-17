@@ -28,13 +28,6 @@ RemoveSpeakers <- function(trans){
 
 docz$text <- sapply(docz$text, RemoveSpeakers)
 
-# randomly sample 10% of docs and hold them out (for our test set)
-set.seed(392) # for reproducibility
-n <- nrow(docz)
-idx <- sample(n, size = floor(n * 0.1))
-train <- docz[-idx, ]
-test <- docz[idx, ]
-
 source('code/extendedStopwords.R')
 dtm.control <- list(
   tolower   		      = T,
@@ -46,19 +39,22 @@ dtm.control <- list(
   weighting 		    	= weightTf
 )
 
-# convert a character vector (of documents) into a document-term matrix
-process_dtm <- function(txt, sparse = 0.999) {
-  corp <- Corpus(VectorSource(txt))
-  dtm1 <- DocumentTermMatrix(corp, control = dtm.control)
-  dtm2 <- removeSparseTerms(dtm1, sparse)
-  message("Removed ", dim(dtm1)[2] - dim(dtm2)[1], " sparse terms")
-  dtm3 <- dtm2[rowSums(as.matrix(dtm2)) > 0, ]
-  message("Removed ", dim(dtm2)[1] - dim(dtm3)[1], 
-          " empty documents (after removing sparse terms).")
-  dtm3
-}
+corp <- Corpus(VectorSource(docz$text))
+dtm <- DocumentTermMatrix(corp, control = dtm.control)
+mat <- as.matrix(dtm1)
+# exclude terms that occur less than 5 times
+idx <- colSums(mat) > 5
+dtm <- dtm[, idx]
+# throw out any empty documents
+idx <- rowSums(mat) != 0
+dtm <- dtm[idx, ]
 
-dtm_train <- process_dtm(train$text)
-dtm_test <- process_dtm(test$text)
+# randomly sample 10% of docs and hold them out (for our test set)
+set.seed(392) # for reproducibility
+n <- nrow(docz)
+idx <- sample(n, size = floor(n * 0.1))
+dtm_train <- dtm[-idx, ]
+dtm_test <- dtm[idx, ]
+
 save(dtm_train, file = "data/dtm_train.rda")
 save(dtm_test, file = "data/dtm_test.rda")
