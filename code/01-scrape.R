@@ -20,13 +20,13 @@ for (i in dates$url) {
 nodes <- llply(xmldocs, function(x) getNodeSet(x, "//div[@id='transcript']"))
 docs <- llply(nodes, function(x) llply(x, xmlValue))
 docs <- sapply(docs, function(x) gsub("\n", " | ", x))
-doc.df <- data.frame(text=docs, url=dates$url, stringsAsFactors=FALSE)
+doc.df <- data.frame(text = docs, url = dates$url, stringsAsFactors = FALSE)
 
-docz <- plyr::join(doc.df, dates, by="url")
+docz <- plyr::join(doc.df, dates, by = "url")
 
 #for some reason, they've been getting lazy on transcribing more recent comics...
 #grab image titles and use that as the transcript (if none exists)
-comics <- llply(xmldocs, function(x) getNodeSet(x, "//div[@id='comic']"))
-imgs <- llply(comics, function(x) llply(x, xmlValue))
+# comics <- llply(xmldocs, function(x) getNodeSet(x, "//div[@id='comic']"))
+# imgs <- llply(comics, function(x) llply(x, xmlValue))
 
 save(docz, file = "data/docz.rda")

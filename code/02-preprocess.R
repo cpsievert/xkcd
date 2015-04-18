@@ -1,17 +1,11 @@
 # Some code here adapted from https://github.com/CabbagesAndKings/xkcd-Topics/blob/master/scripts/getTranscripts.sh
-if (!exists("docz")) load("data/docz.rda")
 library(tm)
+if (!exists("docz")) load("data/docz.rda")
 
-#### Text Cleaning ####
-#Remove alt-text (optional)
-#docz$text <- gsub("\\{\\{.*\\}\\}", "", docz$text)
-
-#Remove scene-description.
-#This might initially seem like a bad idea, but scene descriptions contain stuff like [[Man standing in a room]] ,etc. 
-#I'll revisit this, to see if there's a better solution
+# Remove scene-description. 
 docz$text <- gsub("\\[\\[.*?\\]\\]", "", docz$text)
 
-#remove speaker id
+# Remove speaker id
 #for each pipe-surrounded string, check if there is a : there. If there is, discard the part before the first :
 #this is only moderately accurate, but it's the best way I could think of, without manual intervention
 RemoveSpeakers <- function(trans){
