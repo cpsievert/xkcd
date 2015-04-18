@@ -1,6 +1,21 @@
 # read in traning/test data if it doesn't already exist
-if (!exists("dtm_train")) load("data/dtm_train.rda")
-if (!exists("dtm_test")) load("data/dtm_test.rda")
+if (!exists("dtm")) load("data/dtm.rda")
+
+# randomly sample 10% of docs and hold them out (for our test set)
+set.seed(43523) # for reproducibility
+n <- dtm$nrow
+idx <- sample(n, size = floor(n * 0.1))
+dtm_train <- dtm[-idx, ]
+dtm_test <- dtm[idx, ]
+
+# If we have a term with zero frequency in the training data, that will
+# pose problems for LDAvis (can't divide by zero!)
+termFreqs <- colSums(as.matrix(dtm_train))
+stopifnot(!any(termFreqs == 0))
+save(termFreqs, file = "termFreqs.rda")
+docLens <- rowSums(as.matrix(dtm_train))
+stopifnot(!any(docLens == 0))
+save(docLens, file = "docLens.rda")
 
 # fit a bunch of models -- varying the number of topics
 # section 2.4 of http://www.jstatsoft.org/v40/i13/paper

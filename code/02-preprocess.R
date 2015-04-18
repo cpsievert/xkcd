@@ -1,4 +1,4 @@
-# Som code here adapted from https://github.com/CabbagesAndKings/xkcd-Topics/blob/master/scripts/getTranscripts.sh
+# Some code here adapted from https://github.com/CabbagesAndKings/xkcd-Topics/blob/master/scripts/getTranscripts.sh
 if (!exists("docz")) load("data/docz.rda")
 library(tm)
 
@@ -48,12 +48,4 @@ dtm <- dtm[, idx]
 idx <- rowSums(as.matrix(dtm)) > 0
 dtm <- dtm[idx, ]
 
-# randomly sample 10% of docs and hold them out (for our test set)
-set.seed(392) # for reproducibility
-n <- dtm$nrow
-idx <- sample(n, size = floor(n * 0.1))
-dtm_train <- dtm[-idx, ]
-dtm_test <- dtm[idx, ]
-
-save(dtm_train, file = "data/dtm_train.rda")
-save(dtm_test, file = "data/dtm_test.rda")
+save(dtm, file = "data/dtm.rda")

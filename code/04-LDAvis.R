@@ -1,16 +1,11 @@
 library(methods)
-if (!exists("dtm_train")) load("data/dtm_train.rda")
+if (!exists("termFreqs")) load("data/termFreqs.rda")
+if (!exists("docLens")) load("data/docLens.rda")
 if (!exists("models")) load("data/models.rda")
 
 # keep the "best" model 
-best <- which(sapply(models, function(x) x@k) == 30)
+best <- which(sapply(models, function(x) x@k) == 20)
 best_model <- models[[best]]
-
-# compute summary statistics from training data
-library(topicmodels)
-mat <- as.matrix(dtm_train)
-docLens <- as.numeric(rowSums(mat))
-termFreq <- as.numeric(colSums(mat))
 
 # some sanity checks
 stopifnot(all(names(docLens) == best_model@documents))
