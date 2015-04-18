@@ -9,10 +9,10 @@ best_model <- models[[best]]
 
 # some sanity checks
 stopifnot(all(names(docLens) == best_model@documents))
-stopifnot(all(names(termFreq) == best_model@terms))
+stopifnot(all(names(termFreqs) == best_model@terms))
 
 library(LDAvis)
 json <- createJSON(phi = exp(best_model@beta), theta = best_model@gamma,
                    doc.length = docLens, vocab = best_model@terms,
-                   term.frequency = termFreq)
+                   term.frequency = termFreqs)
 serVis(json, "vis", open.browser = FALSE)
