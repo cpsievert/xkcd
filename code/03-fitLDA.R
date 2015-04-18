@@ -34,10 +34,10 @@ dtm_test <- dtms$dtm_test
 # save some summary statistics that we'll need for LDAvis
 termFreqs <- colSums(as.matrix(dtm_train))
 stopifnot(!any(termFreqs == 0))
-save(termFreqs, file = "termFreqs.rda")
+save(termFreqs, file = "data/termFreqs.rda")
 docLens <- rowSums(as.matrix(dtm_train))
 stopifnot(!any(docLens == 0))
-save(docLens, file = "docLens.rda")
+save(docLens, file = "data/docLens.rda")
 
 # fit a bunch of models -- varying the number of topics
 # section 2.4 of http://www.jstatsoft.org/v40/i13/paper
